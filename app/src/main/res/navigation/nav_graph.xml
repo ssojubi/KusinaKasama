@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.kutsinakasama.HomeFragment"
+        android:label="Home" />
+
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.example.kutsinakasama.FavoritesFragment"
+        android:label="Favorites" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.kutsinakasama.ProfileFragment"
+        android:label="Profile">
+        <action
+            android:id="@+id/action_profile_to_edit"
+            app:destination="@id/editProfileFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.example.kutsinakasama.EditProfileFragment"
+        android:label="Edit Profile" />
+</navigation>
