@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.implementation
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -5,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.kutsinakasama"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.kutsinakasama"
@@ -39,7 +41,8 @@ android {
 }
 
 dependencies {
-
+    implementation ("androidx.navigation:navigation-fragment-ktx:2.8.3")
+    implementation ("androidx.navigation:navigation-ui-ktx:2.8.3")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

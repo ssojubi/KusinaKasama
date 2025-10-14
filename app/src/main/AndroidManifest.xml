@@ -12,15 +12,24 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KutsinaKasama"
         tools:targetApi="31">
+
+        <!-- Main launcher activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Added activities -->
+        <activity android:name=".HomeFragment"
+            tools:ignore="Instantiatable" />
+        <activity android:name=".ProfileFragment"
+            tools:ignore="Instantiatable" />
+        <activity android:name=".EditProfileActivity" />
+
     </application>
 
 </manifest>
