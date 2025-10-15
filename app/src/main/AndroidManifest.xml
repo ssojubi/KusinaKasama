@@ -29,6 +29,9 @@
         <activity android:name=".ProfileFragment"
             tools:ignore="Instantiatable" />
         <activity android:name=".EditProfileActivity" />
+        <activity android:name=".FavoritesActivity"
+            tools:ignore="Instantiatable" />
+
 
     </application>
 
