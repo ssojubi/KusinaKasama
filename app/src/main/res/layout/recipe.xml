@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/imgRecipe"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/egg_sample"
+                android:background="@drawable/rounded_corner" />
+
+            <TextView
+                android:id="@+id/tvRecipeTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/imgRecipe"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="The Perfect Egg"
+                android:textColor="@android:color/white"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:shadowColor="#80000000"
+                android:shadowRadius="6" />
+
+            <ImageButton
+                android:id="@+id/btnFavorite"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignBottom="@id/imgRecipe"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="17dp"
+                android:layout_marginBottom="-4dp"
+                android:background="@drawable/heart_bg"
+                android:contentDescription="Favorite"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/heart" />
+        </RelativeLayout>
+
+        <TextView
+            android:text="Ingredients"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="24dp"
+            android:textColor="@android:color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvIngredients"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="• 3 free-range eggs
+            \n• 10g butter, diced
+            \n• 2 tsp olive oil"
+            android:textSize="14sp"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:text="Method"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="24dp"
+            android:textColor="@android:color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvMethod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="1.Melt a knob of butter in a frying pan placed over a medium heat. Add the spinach and cook for 1–2 minutes, until wilted. Season with salt and pepper. Tip out onto a plate and set aside
+            \n 2. In a bowl, beat the eggs until just mixed. Return the frying pan to a medium–high heat, add the remaining butter and melt until beginning to foam, then swirl it around the pan.
+            \n 3. Pour in the beaten eggs, then tilt the pan to distribute the eggs evenly. Leave for 20 seconds, until the eggs begin to bubble.
+            \n 4. Working quickly, use a spatula or wooden spoon to draw in the sides of the eggs to the centre, incorporating the butter. Gently shake the pan to redistribute the egg to the edges.
+            "
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            android:lineSpacingExtra="4dp" />
+
+    </LinearLayout>
+</ScrollView>
