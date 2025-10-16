@@ -24,10 +24,10 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="106dp"
+        android:layout_marginStart="108dp"
         android:layout_marginTop="68dp"
         android:fontFamily="cursive"
-        android:text="KutsinaKasama"
+        android:text="KusinaKasama"
         android:textColor="@color/white"
         android:textSize="35dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -56,8 +56,9 @@
             android:ems="10"
             android:inputType="text"
             android:padding="15dp"
-            android:text="Username"
-            android:textColor="@color/white" />
+            android:hint="Username"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white" />
 
         <EditText
             android:id="@+id/lginPassInput"
@@ -68,11 +69,12 @@
             android:ems="10"
             android:inputType="textPassword"
             android:padding="15dp"
-            android:text="Password"
-            android:textColor="@color/white" />
+            android:hint="Password"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/lginButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Login"
@@ -132,6 +134,7 @@
                 android:textColor="@color/white" />
 
             <Button
+                android:id="@+id/bttnGoToSignUp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@android:color/transparent"

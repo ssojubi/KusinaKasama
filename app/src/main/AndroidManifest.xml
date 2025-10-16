@@ -31,6 +31,10 @@
         <activity android:name=".EditProfileActivity" />
         <activity android:name=".FavoritesActivity"
             tools:ignore="Instantiatable" />
+        <activity android:name=".LoginActivity"
+            android:exported="false"/>
+        <activity android:name=".SignUpActivity"
+            android:exported="false"/>
 
 
     </application>

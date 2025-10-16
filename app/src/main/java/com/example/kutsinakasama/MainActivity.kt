@@ -37,6 +37,7 @@
 
 package com.example.kutsinakasama
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -49,23 +50,27 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        var isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
+
+        if (!isLoggedIn) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            intent.putExtra("isLoggedIn", isLoggedIn)
+            finish() // Prevent going back to MainActivity
+            return
+        }
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Load HomeFragment by default
         replaceFragment(HomeFragment())
 
-        // Handle bottom navigation item clicks
         binding.bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.home -> {
                     replaceFragment(HomeFragment())
                     true
                 }
-//                R.id.favorites -> {
-//                    replaceFragment(FavoritesFragment())
-//                    true
-//                }
                 R.id.profile -> {
                     replaceFragment(ProfileFragment())
                     true
