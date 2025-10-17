@@ -23,6 +23,16 @@
                 android:src="@drawable/egg_sample"
                 android:background="@drawable/rounded_corner" />
 
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_back_btn"
+                android:contentDescription="Back button"
+                android:clickable="true"
+                android:focusable="true"/>
+
             <TextView
                 android:id="@+id/tvRecipeTitle"
                 android:layout_width="wrap_content"
