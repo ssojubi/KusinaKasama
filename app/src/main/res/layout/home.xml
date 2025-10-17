@@ -15,6 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="KusinaKasama"
+        android:fontFamily="@font/kaushan_script"
         android:textColor="#576238"
         android:textSize="24sp"
         android:textStyle="italic"
