@@ -30,10 +30,10 @@ class EditProfileActivity : AppCompatActivity() {
             // TODO: will add image picker (MCO3)
         }
 
-//        binding.forgotPassword.setOnClickListener {
-//            Toast.makeText(this, "Password reset clicked", Toast.LENGTH_SHORT).show()
-//            // TODO: Will add navigation for password resets (MCO3)
-//        }
+        binding.forgotPassword.setOnClickListener {
+            Toast.makeText(this, "Password reset clicked", Toast.LENGTH_SHORT).show()
+            // TODO: Will add navigation for password resets (MCO3)
+        }
 
         binding.btnSave.setOnClickListener {
             val email = binding.editTextEmail.text.toString().trim()

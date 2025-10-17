@@ -71,6 +71,10 @@ class MainActivity : AppCompatActivity() {
                     replaceFragment(HomeFragment())
                     true
                 }
+                R.id.favorites -> {
+                    replaceFragment(FavoritesFragment())
+                    true
+                }
                 R.id.profile -> {
                     replaceFragment(ProfileFragment())
                     true

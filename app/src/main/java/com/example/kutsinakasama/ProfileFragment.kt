@@ -25,14 +25,11 @@ class ProfileFragment : Fragment() {
             val intent = Intent(requireContext(), EditProfileActivity::class.java)
             startActivity(intent)
         }
-        binding.btnViewFavorites.setOnClickListener {
-            val intent = Intent(requireContext(), FavoritesActivity::class.java)
-            startActivity(intent)
-        }
+
         binding.btnLogout.setOnClickListener {
-        // Handle logout logic here will redirect to login/signup
-//            val intent = Intent(requireContext(), LoginActivity::class.java)
-//            startActivity(intent)
+        // TODO: handle logout logic here will redirect to login/signup
+            val intent = Intent(requireContext(), LoginActivity::class.java)
+            startActivity(intent)
             Toast.makeText(requireContext(), "Logout Pressed", Toast.LENGTH_SHORT).show()
         }
         return binding.root
