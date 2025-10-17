@@ -10,7 +10,6 @@ import com.example.kutsinakasama.databinding.HomeBinding
 
 class HomeFragment : Fragment() {
 
-    // ViewBinding variable
     private var _binding: HomeBinding? = null
     private val binding get() = _binding!!
 
@@ -18,7 +17,6 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate layout with ViewBinding
         _binding = HomeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -26,15 +24,23 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Example: Button opens ProfileActivity
+
+        binding.recipeCard.setOnClickListener {
+            val intent = Intent(requireContext(), RecipeActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+
+    // Example: Button opens ProfileActivity
 //        binding.btnGoProfile.setOnClickListener {
 //            val intent = Intent(requireContext(), ProfileActivity::class.java)
 //            startActivity(intent)
 //        }
-    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null // prevent memory leaks
+        _binding = null
     }
 }
