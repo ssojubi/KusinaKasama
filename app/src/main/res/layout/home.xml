@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="KutsinaKasama"
+        android:text="KusinaKasama"
         android:textColor="#576238"
         android:textSize="24sp"
         android:textStyle="italic"
