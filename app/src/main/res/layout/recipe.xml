@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white">
@@ -28,10 +29,13 @@
                 android:id="@+id/btnBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_back_btn"
-                android:contentDescription="Back button"
+                android:backgroundTint="#FBF0F0"
                 android:clickable="true"
-                android:focusable="true"/>
+                android:contentDescription="Back button"
+                android:elevation="3dp"
+                android:focusable="true"
+                android:src="@drawable/ic_back_btn"
+                app:tint="#F8F4F4" />
 
             <TextView
                 android:id="@+id/tvRecipeTitle"
@@ -55,11 +59,12 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="17dp"
                 android:layout_marginBottom="-4dp"
-                android:background="@drawable/heart_bg"
+                android:background="@drawable/heart_bg_yellow"
                 android:contentDescription="Favorite"
                 android:padding="10dp"
                 android:scaleType="fitCenter"
-                android:src="@drawable/heart_bg" />
+                android:src="@drawable/selector_heart" />
+
         </RelativeLayout>
 
         <TextView

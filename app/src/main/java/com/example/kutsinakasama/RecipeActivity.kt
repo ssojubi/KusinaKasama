@@ -14,6 +14,13 @@ class RecipeActivity : AppCompatActivity() {
         binding = RecipeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.btnBack.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+
+        binding.btnFavorite.setOnClickListener {
+            it.isSelected = !it.isSelected
+        }
         binding.tvRecipeTitle.text = "The Perfect Egg"
     }
 }
