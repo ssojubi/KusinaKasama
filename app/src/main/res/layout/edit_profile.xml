@@ -102,12 +102,23 @@
             android:textColorHint="#A1A1A1"
             android:layout_marginBottom="12dp" />
 
-        <!-- Password Field -->
+        <!-- Old Password Field -->
         <EditText
-            android:id="@+id/editTextPassword"
+            android:id="@+id/editTextOldPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Password"
+            android:hint="Old Password"
+            android:inputType="textPassword"
+            android:background="@drawable/bg_input_field"
+            android:padding="12dp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- New Password Field -->
+        <EditText
+            android:id="@+id/editTextNewPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="New Password"
             android:inputType="textPassword"
             android:background="@drawable/bg_input_field"
             android:padding="12dp"
@@ -118,7 +129,6 @@
             android:id="@+id/forgotPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
             android:clickable="true"
             android:text="Forgot your password?"
             android:textColor="#7A7A7A"
