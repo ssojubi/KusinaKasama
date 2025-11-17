@@ -47,16 +47,16 @@
 
 
         <EditText
-            android:id="@+id/lginUserInput"
+            android:id="@+id/lginEmailInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
             android:layout_marginBottom="20dp"
             android:background="@drawable/rounded_corner"
             android:ems="10"
-            android:inputType="text"
+            android:inputType="textEmailAddress"
             android:padding="15dp"
-            android:hint="Username"
+            android:hint="Email"
             android:textColor="@color/white"
             android:textColorHint="@color/white" />
 

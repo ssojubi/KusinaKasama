@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class LoginActivity : AppCompatActivity() {
@@ -21,7 +20,7 @@ class LoginActivity : AppCompatActivity() {
         var isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
 
 
-        usernameInput = findViewById(R.id.lginUserInput)
+        usernameInput = findViewById(R.id.lginEmailInput)
         passwordInput = findViewById(R.id.lginPassInput)
         loginBtn = findViewById(R.id.lginButton)
         signupBtn = findViewById(R.id.bttnGoToSignUp)
