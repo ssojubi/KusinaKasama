@@ -81,9 +81,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="• 3 free-range eggs
-            \n• 10g butter, diced
-            \n• 2 tsp olive oil"
             android:textSize="14sp"
             android:textColor="@android:color/black" />
 
@@ -101,11 +98,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="1.Melt a knob of butter in a frying pan placed over a medium heat. Add the spinach and cook for 1–2 minutes, until wilted. Season with salt and pepper. Tip out onto a plate and set aside
-            \n 2. In a bowl, beat the eggs until just mixed. Return the frying pan to a medium–high heat, add the remaining butter and melt until beginning to foam, then swirl it around the pan.
-            \n 3. Pour in the beaten eggs, then tilt the pan to distribute the eggs evenly. Leave for 20 seconds, until the eggs begin to bubble.
-            \n 4. Working quickly, use a spatula or wooden spoon to draw in the sides of the eggs to the centre, incorporating the butter. Gently shake the pan to redistribute the egg to the edges.
-            "
             android:textSize="14sp"
             android:textColor="@android:color/black"
             android:lineSpacingExtra="4dp" />
