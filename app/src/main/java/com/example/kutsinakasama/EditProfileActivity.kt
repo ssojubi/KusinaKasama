@@ -113,6 +113,7 @@ class EditProfileActivity : AppCompatActivity() {
         val imageUriToSave = selectedImageUri ?: currentImageUri
 
         val db = dbHelper.writableDatabase
+
         val values = ContentValues().apply {
             put(DBHelper.COL_EMAIL, newEmail)
             put(DBHelper.COL_PASSWORD, newPasswordInput)
