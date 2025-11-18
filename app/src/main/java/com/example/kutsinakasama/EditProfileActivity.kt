@@ -110,10 +110,8 @@ class EditProfileActivity : AppCompatActivity() {
             return
         }
 
-        // decide final image uri to save: either newly selected or keep existing
         val imageUriToSave = selectedImageUri ?: currentImageUri
 
-        // Use ContentValues + update() for safe param binding
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
             put(DBHelper.COL_EMAIL, newEmail)
@@ -133,10 +131,10 @@ class EditProfileActivity : AppCompatActivity() {
         if (rowsUpdated > 0) {
             Toast.makeText(this, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
 
-            // optionally update session email/name in SharedPreferences if you store them
+            // optionally update session email/name in SharedPreferences
             val prefs = getSharedPreferences("userSession", Context.MODE_PRIVATE)
             if (prefs.contains("userId")) {
-                // update any stored display values (if present)
+                // update any stored display values
                 prefs.edit()
                     .putString("user_email", newEmail).apply()
             }
