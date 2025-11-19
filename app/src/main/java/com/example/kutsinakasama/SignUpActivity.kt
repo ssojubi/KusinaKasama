@@ -2,40 +2,66 @@ package com.example.kutsinakasama
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.kutsinakasama.databinding.SignupBinding
+
 
 class SignUpActivity : AppCompatActivity() {
-    lateinit var usernameInput : EditText
 
-    lateinit var emailInput : EditText
-    lateinit var passwordInput : EditText
-    lateinit var signupBtn: Button
+    private lateinit var binding : SignupBinding
 
-    lateinit var loginBtn: Button
+    private lateinit var databaseHelper: DBHelper
 
-    override fun onCreate(savedInstanceState: Bundle?){
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.signup)
 
-        usernameInput = findViewById(R.id.signupUserInput)
-        emailInput = findViewById(R.id.signupEmailInput)
-        passwordInput = findViewById(R.id.signupPassInput)
-        signupBtn = findViewById(R.id.signupButton)
-        loginBtn = findViewById(R.id.bttnGoToLogin)
+        binding = SignupBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        signupBtn.setOnClickListener{
+        databaseHelper = DBHelper(this)
+
+        binding.signupButton.setOnClickListener {
+            val firstName = binding.signupFirstNameInput.text.toString().trim()
+            val lastName = binding.signupLastNameInput.text.toString().trim()
+            val signupName = "$firstName $lastName"
+            val signupEmail = binding.signupEmailInput.text.toString().trim()
+            val signupPassword = binding.signupPassInput.text.toString()
+            val signupConfirmPassword = binding.signupRePassInput.text.toString()
+
+            if (firstName.isNotEmpty() && lastName.isNotEmpty() && signupEmail.isNotEmpty() && signupPassword.isNotEmpty() && signupConfirmPassword.isNotEmpty()) {
+                if (signupPassword == signupConfirmPassword) {
+                    if (!databaseHelper.isEmailTaken(signupEmail)) {
+                        // Email is not taken, proceed with signup
+                        signupDatabase(signupName, signupEmail, signupPassword)
+                    } else {
+                        Toast.makeText(this, "This email is already registered.", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this, "Passwords do not match.", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(this, "Please fill in all fields.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        binding.bttnGoToLogin.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
         }
 
-        loginBtn.setOnClickListener {
+    }
+
+    private fun signupDatabase(name : String, email : String, password : String){
+        val insertedRowId = databaseHelper.insertUser(name, email, password)
+        if (insertedRowId != -1L){
+            Toast.makeText(this, "Sign up successful", Toast.LENGTH_SHORT).show()
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
+            finish()
+        }else{
+            Toast.makeText(this, "Signup failed", Toast.LENGTH_SHORT).show()
         }
-
     }
 }
