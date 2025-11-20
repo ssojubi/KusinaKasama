@@ -30,6 +30,7 @@ class DBHelper(context: Context) :
         """.trimIndent()
 
         db.execSQL(insertDummy)
+        
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
