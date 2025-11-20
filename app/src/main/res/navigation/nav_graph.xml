@@ -17,13 +17,6 @@
         android:id="@+id/profileFragment"
         android:name="com.example.kutsinakasama.ProfileFragment"
         android:label="Profile">
-<!--        <action-->
-<!--            android:id="@+id/action_profile_to_edit"-->
-<!--            app:destination="@id/editProfileFragment" />-->
     </fragment>
 
-<!--    <fragment-->
-<!--        android:id="@+id/editProfileFragment"-->
-<!--        android:name="com.example.kutsinakasama.EditProfileActivity"-->
-<!--        android:label="Edit Profile" />-->
 </navigation>
