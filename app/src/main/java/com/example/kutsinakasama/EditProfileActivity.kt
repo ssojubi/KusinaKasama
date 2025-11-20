@@ -13,6 +13,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.kutsinakasama.databinding.EditProfileBinding
 import com.squareup.picasso.Picasso
+import java.io.File
+import java.io.FileOutputStream
+import com.squareup.picasso.MemoryPolicy
+import com.squareup.picasso.NetworkPolicy
 
 class EditProfileActivity : AppCompatActivity() {
 
@@ -28,14 +32,17 @@ class EditProfileActivity : AppCompatActivity() {
     private val pickImageLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
-                selectedImageUri = it.toString()
-                // Apply circle transformation
+                selectedImageUri = saveImageToInternalStorage(it)
+
                 Picasso.get()
-                    .load(it)
+                    .load(File(selectedImageUri))
                     .transform(CircleImage())
+                    .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                    .networkPolicy(NetworkPolicy.NO_CACHE)
                     .into(binding.imgProfile)
             }
         }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,10 +97,10 @@ class EditProfileActivity : AppCompatActivity() {
         currentImageUri = user.imageUri
 
         // load existing image (if present) into imgProfile, otherwise the placeholder will stay
-        if (!currentImageUri.isNullOrEmpty()) {
+        if (!currentImageUri.isNullOrEmpty() && currentImageUri != "null") {
             try {
                 Picasso.get()
-                    .load(currentImageUri)
+                    .load(File(currentImageUri))
                     .transform(CircleImage())
                     .placeholder(R.drawable.ic_user_icon_placeholder)
                     .into(binding.imgProfile)
@@ -101,6 +108,7 @@ class EditProfileActivity : AppCompatActivity() {
                 binding.imgProfile.setImageResource(R.drawable.ic_user_icon_placeholder)
             }
         }
+
     }
 
     private fun saveUpdatedProfile() {
@@ -183,6 +191,25 @@ class EditProfileActivity : AppCompatActivity() {
             finish()
         } else {
             Toast.makeText(this, "Failed to update profile.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun saveImageToInternalStorage(uri: Uri): String? {
+        return try {
+            val inputStream = contentResolver.openInputStream(uri)
+            val fileName = "profile_${userId}.jpg"
+            val file = File(filesDir, fileName)
+
+            val outputStream = FileOutputStream(file)
+            inputStream?.copyTo(outputStream)
+
+            inputStream?.close()
+            outputStream.close()
+
+            file.absolutePath
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 

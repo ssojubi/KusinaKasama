@@ -21,11 +21,12 @@ class DBHelper(context: Context) :
         """.trimIndent()
 
         db.execSQL(createUserTable)
+        val defaultImageUri = "android.resource://com.example.kutsinakasama/${R.drawable.ic_user_icon_placeholder}"
 
 
         val insertDummy = """
             INSERT INTO $TABLE_USERS ($COL_NAME, $COL_EMAIL, $COL_PASSWORD, $COL_IMAGE_URI)
-            VALUES ('John Doe', 'johndoe@example.com', '123456', NULL);
+            VALUES ('John Doe', 'johndoe@example.com', '123456', $defaultImageUri);
         """.trimIndent()
 
         db.execSQL(insertDummy)

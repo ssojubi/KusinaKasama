@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,10 @@ import android.view.ViewGroup
 import com.example.kutsinakasama.databinding.ProfileBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.squareup.picasso.Picasso
+import java.io.File
+import com.squareup.picasso.MemoryPolicy
+import com.squareup.picasso.NetworkPolicy
+
 
 class ProfileFragment : Fragment() {
 
@@ -49,11 +54,15 @@ class ProfileFragment : Fragment() {
             binding.tvName.text = user.name
             binding.tvEmail.text = user.email
 
-            if (!user.imageUri.isNullOrEmpty()) {
+            if (user.imageUri != null && user.imageUri != "null" && user.imageUri!!.isNotEmpty()) {
+
                 Picasso.get()
-                    .load(Uri.parse(user.imageUri))
-                    .placeholder(R.drawable.ic_user_icon_placeholder)
+                    .load(File(user.imageUri))
+                    .transform(CircleImage())
+                    .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                    .networkPolicy(NetworkPolicy.NO_CACHE)
                     .into(binding.imgProfile)
+
             }
         }
     }
@@ -67,7 +76,7 @@ class ProfileFragment : Fragment() {
             startActivity(intent)
         }
     }
-//not working pa
+
     private fun setupFavorites() {
         binding.btnFavorites.setOnClickListener {
             val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
