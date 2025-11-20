@@ -14,6 +14,8 @@ import com.example.kutsinakasama.databinding.HomeBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import com.google.android.material.chip.Chip
+import android.view.inputmethod.EditorInfo
 
 class HomeFragment : Fragment() {
 
@@ -32,6 +34,18 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.searchBar.setOnEditorActionListener { _, _, _ ->
+            val input = binding.searchBar.text.toString().trim()
+
+            if (input.isNotEmpty()) {
+                addChip(input)
+                binding.searchBar.text.clear()   // clear after enter
+            }
+
+            true
+        }
+
         loadRecipes()
     }
 
@@ -87,7 +101,21 @@ class HomeFragment : Fragment() {
 //            val intent = Intent(requireContext(), ProfileActivity::class.java)
 //            startActivity(intent)
 //        }
+    private fun addChip(text: String) {
+        val chip = layoutInflater.inflate(R.layout.ingredient_chip, null) as Chip
+        chip.text = text
 
+        // Disable chip selection toggle
+        chip.isCheckable = false
+        chip.isClickable = true
+
+        // Remove chip when X is pressed
+        chip.setOnCloseIconClickListener {
+            binding.ingredientChipGroup.removeView(chip)
+        }
+
+        binding.ingredientChipGroup.addView(chip)
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
