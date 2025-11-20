@@ -1,5 +1,6 @@
 package com.example.kutsinakasama
 
+
 data class RecipeResponse(
     val id: Int,
     val title: String,
@@ -10,4 +11,13 @@ data class RecipeResponse(
 
 data class Ingredient(
     val original: String
+)
+data class RecipeSearchResponse(
+    val results: List<RecipePreview>
+)
+
+data class RecipePreview(
+    val id: Int,
+    val title: String,
+    val image: String
 )
