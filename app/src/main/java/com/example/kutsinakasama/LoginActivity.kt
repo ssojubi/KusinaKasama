@@ -94,13 +94,12 @@ class LoginActivity : AppCompatActivity() {
                     val inputStream = contentResolver.openInputStream(imageUri)
                     val bitmap = BitmapFactory.decodeStream(inputStream)
                     binding.imageView.setImageBitmap(bitmap)
-                    inputStream?.close() // Don't forget to close the stream
+                    inputStream?.close()
                 } catch (e: Exception) {
                     Log.e("LoginActivity", "Failed to load image URI: $savedImageUri", e)
                     binding.imageView.setImageResource(R.drawable.baseline_account_circle_24)
                 }
             } else {
-                // If there's no saved image, ensure the placeholder is shown
                 binding.imageView.setImageResource(R.drawable.baseline_account_circle_24)
             }
         }
