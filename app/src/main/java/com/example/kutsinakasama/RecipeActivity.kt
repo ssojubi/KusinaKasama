@@ -13,11 +13,11 @@ class RecipeActivity : AppCompatActivity() {
 
     private lateinit var binding: RecipeBinding
 
-    private val apiKey = "YOUR_SPOONACULAR_API_KEY"
-    private val recipeId = 716429
+    private val apiKey = "f3051e4d59ff4d2daebd550ced762374"
+    private val recipeId = 715415
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        super.onCreate(savedInstanceState)  
 
         binding = RecipeBinding.inflate(layoutInflater)
         setContentView(binding.root)
