@@ -103,11 +103,24 @@
             </LinearLayout>
 
         </LinearLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFavorites"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:backgroundTint="#F0EADC"
+            android:text="Favorites"
+            android:textColor="#000000"
+            app:icon="@drawable/ic_save_icon"
+            app:iconTint="@android:color/holo_green_dark"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:iconSize="20dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogout"
             android:layout_width="match_parent"
             android:layout_height="65dp"
+            android:layout_marginTop="12dp"
             android:backgroundTint="#F0EADC"
             android:text="Logout"
             android:textColor="#000000"

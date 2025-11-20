@@ -24,6 +24,7 @@ class ProfileFragment : Fragment() {
         dbHelper = DBHelper(requireContext())
 
         loadUserData()
+        setupFavorites()
         setupEditProfile()
         setupLogout()
 
@@ -65,6 +66,14 @@ class ProfileFragment : Fragment() {
             startActivity(intent)
         }
     }
+//not working pa
+    private fun setupFavorites() {
+        binding.btnFavorites.setOnClickListener {
+            val intent = Intent(requireContext(), FavoritesFragment::class.java)
+            startActivity(intent)
+        }
+    }
+
     private fun setupLogout() {
         binding.btnLogout.setOnClickListener {
             val sharedPref = requireActivity().getSharedPreferences("userSession", Context.MODE_PRIVATE)
