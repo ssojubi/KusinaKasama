@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.kutsinakasama.databinding.ProfileBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.squareup.picasso.Picasso
 
 class ProfileFragment : Fragment() {
@@ -69,10 +70,11 @@ class ProfileFragment : Fragment() {
 //not working pa
     private fun setupFavorites() {
         binding.btnFavorites.setOnClickListener {
-            val intent = Intent(requireContext(), FavoritesFragment::class.java)
-            startActivity(intent)
+            val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+            bottomNav.selectedItemId = R.id.favorites
         }
     }
+
 
     private fun setupLogout() {
         binding.btnLogout.setOnClickListener {
