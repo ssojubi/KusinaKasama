@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 
 class DBHelper(context: Context) :
     SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
@@ -56,6 +57,23 @@ class DBHelper(context: Context) :
 
         cursor.close()
         return user
+    }
+
+    fun getUserIdByEmail(email: String): Int {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT $COL_ID FROM $TABLE_USERS WHERE $COL_EMAIL = ?",
+            arrayOf(email)
+        )
+
+        var userId = -1
+        if (cursor.moveToFirst()) {
+            userId = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ID))
+        }
+
+        cursor.close()
+        Log.d("DBHelper", "getUserIdByEmail($email) returned: $userId")
+        return userId
     }
 
     fun insertUser(name: String, email: String, password: String): Long {

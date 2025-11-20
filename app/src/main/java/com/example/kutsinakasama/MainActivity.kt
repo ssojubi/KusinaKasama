@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import com.example.kutsinakasama.databinding.ActivityMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import android.content.Context
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -14,8 +15,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val sharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-
+        val sharedPreferences = getSharedPreferences("userSession", Context.MODE_PRIVATE)
         val isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false)
 
         if(!isLoggedIn){
@@ -23,7 +23,6 @@ class MainActivity : AppCompatActivity() {
             finish()
             return
         }
-
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -55,4 +54,3 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 }
-

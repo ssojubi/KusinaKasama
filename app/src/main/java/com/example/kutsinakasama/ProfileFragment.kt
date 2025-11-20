@@ -24,6 +24,7 @@ class ProfileFragment : Fragment() {
         dbHelper = DBHelper(requireContext())
 
         loadUserData()
+        setupEditProfile()
         setupLogout()
 
         return binding.root
@@ -49,11 +50,21 @@ class ProfileFragment : Fragment() {
             if (!user.imageUri.isNullOrEmpty()) {
                 Picasso.get()
                     .load(Uri.parse(user.imageUri))
+                    .placeholder(R.drawable.ic_user_icon_placeholder)
                     .into(binding.imgProfile)
             }
         }
     }
+    private fun setupEditProfile() {
+        binding.btnEditProfile.setOnClickListener {
+            val sharedPref = requireActivity().getSharedPreferences("userSession", Context.MODE_PRIVATE)
+            val userId = sharedPref.getInt("userId", -1)
 
+            val intent = Intent(requireContext(), EditProfileActivity::class.java)
+            intent.putExtra("userId", userId)
+            startActivity(intent)
+        }
+    }
     private fun setupLogout() {
         binding.btnLogout.setOnClickListener {
             val sharedPref = requireActivity().getSharedPreferences("userSession", Context.MODE_PRIVATE)
@@ -63,5 +74,10 @@ class ProfileFragment : Fragment() {
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }
+    }
+    //when coming back from edit profile
+    override fun onResume() {
+        super.onResume()
+        loadUserData() // reload user data when fragment becomes visible again
     }
 }

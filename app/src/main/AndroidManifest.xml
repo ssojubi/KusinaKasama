@@ -26,13 +26,14 @@
         </activity>
 
         <!-- Added activities -->
-        <activity android:name=".HomeFragment"
-            tools:ignore="Instantiatable" />
-        <activity android:name=".ProfileFragment"
-            tools:ignore="Instantiatable" />
-        <activity android:name=".EditProfileActivity" />
-        <activity android:name=".FavoritesFragment"
-            tools:ignore="Instantiatable" />
+<!--        <activity android:name=".HomeFragment"-->
+<!--            tools:ignore="Instantiatable" />-->
+<!--        <activity android:name=".ProfileFragment"-->
+<!--            tools:ignore="Instantiatable" />-->
+        <activity android:name=".EditProfileActivity"
+            android:exported="false"/>
+<!--        <activity android:name=".FavoritesFragment"-->
+<!--            tools:ignore="Instantiatable" />-->
         <activity android:name=".LoginActivity"
             android:exported="false"/>
         <activity android:name=".SignUpActivity"

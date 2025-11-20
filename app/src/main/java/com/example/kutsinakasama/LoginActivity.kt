@@ -6,6 +6,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.kutsinakasama.databinding.LoginBinding
 import android.content.Context
+import android.util.Log
+
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding : LoginBinding
@@ -35,21 +37,62 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
-    private fun loginDatabase(email: String, password: String){
-        val userExists = databaseHelper.readUser(email, password)
-        if(userExists){
-            Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
+//    private fun loginDatabase(email: String, password: String){
+//        val userExists = databaseHelper.readUser(email, password)
+//        if(userExists){
+//            Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
+//            val userId = databaseHelper.getUserIdByEmail(email)
+//
+//            val sharedPreferences = getSharedPreferences("userSession", Context.MODE_PRIVATE)
+//            val editor = sharedPreferences.edit()
+//            editor.putBoolean("is_logged_in", true)
+//            editor.putInt("userId", userId) // save userId here to be retrieved on profile page
+//            editor.apply()
+//
+//            val intent = Intent(this, MainActivity::class.java)
+//            startActivity(intent)
+//            finish()
+//        }
+//
+//        else{
+//            Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show()
+//        }
+//    }
+private fun loginDatabase(email: String, password: String){
+    Log.d("LOGIN_DEBUG", "=== LOGIN ATTEMPT ===")
+    Log.d("LOGIN_DEBUG", "Email: $email")
 
-            val sharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-            val editor = sharedPreferences.edit()
-            editor.putBoolean("is_logged_in", true)
-            editor.apply()
+    val userExists = databaseHelper.readUser(email, password)
+    Log.d("LOGIN_DEBUG", "User exists: $userExists")
 
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        }else{
-            Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show()
+    if(userExists){
+        // Get the userId from database
+        val userId = databaseHelper.getUserIdByEmail(email)
+
+        Log.d("LOGIN_DEBUG", "User ID retrieved: $userId")
+
+        if (userId == -1) {
+            Toast.makeText(this, "Error retrieving user ID", Toast.LENGTH_SHORT).show()
+            return
         }
+
+        Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
+
+        // Save to SharedPreferences
+        val sharedPreferences = getSharedPreferences("userSession", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putBoolean("is_logged_in", true)
+        editor.putInt("userId", userId)
+        editor.apply()
+
+        Log.d("LOGIN_DEBUG", "About to start MainActivity")
+
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
     }
+    else{
+        Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show()
+    }
+}
 }
