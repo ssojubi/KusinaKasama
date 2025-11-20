@@ -125,6 +125,29 @@ class DBHelper(context: Context) :
         return cursor.use { it.count > 0}
     }
 
+    fun getUserByEmail(email: String): User? {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT * FROM $TABLE_USERS WHERE $COL_EMAIL = ?",
+            arrayOf(email)
+        )
+        return cursor.use { c ->
+            if (c.moveToFirst()) {
+                User(
+                    c.getInt(c.getColumnIndexOrThrow(COL_ID)),
+                    c.getString(c.getColumnIndexOrThrow(COL_NAME)),
+                    c.getString(c.getColumnIndexOrThrow(COL_EMAIL)),
+                    c.getString(c.getColumnIndexOrThrow(COL_PASSWORD)),
+                    c.getString(c.getColumnIndexOrThrow(COL_IMAGE_URI))
+                )
+            } else {
+                null
+            }
+        }
+    }
+
+
+
     companion object {
         private const val DB_NAME = "kusinakasama.db"
         private const val DB_VERSION = 1
