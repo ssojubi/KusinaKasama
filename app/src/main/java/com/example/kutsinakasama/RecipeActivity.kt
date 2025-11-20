@@ -14,11 +14,16 @@ class RecipeActivity : AppCompatActivity() {
     private lateinit var binding: RecipeBinding
 
     private val apiKey = "f3051e4d59ff4d2daebd550ced762374"
-    private val recipeId = 715415
+    private var recipeId = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)  
+        super.onCreate(savedInstanceState)
 
+        recipeId = intent.getIntExtra("RECIPE_ID", -1)
+        if (recipeId == -1) {
+            finish()
+            return
+        }
         binding = RecipeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -29,7 +34,6 @@ class RecipeActivity : AppCompatActivity() {
         binding.btnFavorite.setOnClickListener {
             it.isSelected = !it.isSelected
         }
-
         loadRecipeFromApi()
     }
 
