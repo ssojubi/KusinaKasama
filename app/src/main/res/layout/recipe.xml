@@ -35,7 +35,7 @@
                 android:elevation="3dp"
                 android:focusable="true"
                 android:src="@drawable/ic_back_btn"
-                app:tint="#F8F4F4" />
+                app:tint="#000000" />
 
             <TextView
                 android:id="@+id/tvRecipeTitle"

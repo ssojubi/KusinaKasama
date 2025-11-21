@@ -12,9 +12,11 @@ import retrofit2.Response
 class RecipeActivity : AppCompatActivity() {
 
     private lateinit var binding: RecipeBinding
+    private lateinit var db: DBHelper
 
     private val apiKey = "f3051e4d59ff4d2daebd550ced762374"
     private var recipeId = -1
+    private var recipeTitle = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,17 +26,42 @@ class RecipeActivity : AppCompatActivity() {
             finish()
             return
         }
+
         binding = RecipeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        db = DBHelper(this)
 
         binding.btnBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
 
+        // Update the favorite button state
+        updateFavoriteButton()
+
         binding.btnFavorite.setOnClickListener {
-            it.isSelected = !it.isSelected
+            toggleFavorite()
         }
+
         loadRecipeFromApi()
+    }
+
+    private fun updateFavoriteButton() {
+        if (db.isFavorite(recipeId)) {
+            binding.btnFavorite.setImageResource(R.drawable.ic_heart_filled)
+        } else {
+            binding.btnFavorite.setImageResource(R.drawable.ic_heart_hollow)
+        }
+    }
+
+    private fun toggleFavorite() {
+        if (db.isFavorite(recipeId)) {
+            db.removeFavorite(recipeId)
+            binding.btnFavorite.setImageResource(R.drawable.ic_heart_hollow)
+        } else {
+            db.addFavorite(recipeId, recipeTitle)
+            binding.btnFavorite.setImageResource(R.drawable.ic_heart_filled)
+        }
     }
 
     private fun loadRecipeFromApi() {
@@ -48,8 +75,9 @@ class RecipeActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         val recipe = response.body()
                         if (recipe != null) {
+                            recipeTitle = recipe.title ?: "No Title"
 
-                            binding.tvRecipeTitle.text = recipe.title
+                            binding.tvRecipeTitle.text = recipeTitle
 
                             binding.tvMethod.text =
                                 recipe.instructions ?: "No instructions available."
@@ -64,6 +92,9 @@ class RecipeActivity : AppCompatActivity() {
                                 .placeholder(R.drawable.egg_sample)
                                 .error(R.drawable.egg_sample)
                                 .into(binding.imgRecipe)
+
+                            // Update favorite button
+                            updateFavoriteButton()
                         } else {
                             Log.e("API_ERROR", "No recipe data found")
                         }

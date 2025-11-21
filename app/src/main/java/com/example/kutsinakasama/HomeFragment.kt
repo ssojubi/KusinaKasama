@@ -21,7 +21,7 @@ class HomeFragment : Fragment() {
 
     private var _binding: HomeBinding? = null
     private val binding get() = _binding!!
-
+    private var currentRecipes: List<RecipePreview> = emptyList()
     private val apiKey = "f3051e4d59ff4d2daebd550ced762374"
 
     override fun onCreateView(
@@ -32,6 +32,13 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        // refresh
+        if (_binding != null && currentRecipes.isNotEmpty()) {
+            displayRecipes(currentRecipes)
+        }
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -97,14 +104,14 @@ class HomeFragment : Fragment() {
             val favButton = itemView.findViewById<ImageView>(R.id.btnFavorite)
             val db = DBHelper(requireContext())
 
-            // Set initial state
+
             if (db.isFavorite(recipe.id)) {
                 favButton.setImageResource(R.drawable.ic_heart_filled)
             } else {
                 favButton.setImageResource(R.drawable.ic_heart_hollow)
             }
 
-            // Toggle favorite
+
             favButton.setOnClickListener {
                 if (db.isFavorite(recipe.id)) {
                     db.removeFavorite(recipe.id)
@@ -137,6 +144,7 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
 }
 
 
