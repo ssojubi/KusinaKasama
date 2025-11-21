@@ -21,21 +21,73 @@ class DBHelper(context: Context) :
         """.trimIndent()
 
         db.execSQL(createUserTable)
+
         val defaultImageUri = "android.resource://com.example.kutsinakasama/${R.drawable.ic_user_icon_placeholder}"
 
-
         val insertDummy = """
-            INSERT INTO $TABLE_USERS ($COL_NAME, $COL_EMAIL, $COL_PASSWORD, $COL_IMAGE_URI)
-            VALUES ('John Doe', 'johndoe@example.com', '123456', $defaultImageUri);
-        """.trimIndent()
+        INSERT INTO $TABLE_USERS ($COL_NAME, $COL_EMAIL, $COL_PASSWORD, $COL_IMAGE_URI)
+         VALUES (?, ?, ?, ?)
+        """
 
-        db.execSQL(insertDummy)
+        db.execSQL(insertDummy, arrayOf("John Doe", "johndoe@example.com", "123456", defaultImageUri))
+
+        val createFavoritesTable = """
+        CREATE TABLE favorites (
+            id INTEGER PRIMARY KEY,
+            title TEXT
+        );
+    """.trimIndent()
+
+        db.execSQL(createFavoritesTable)
         
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS $TABLE_USERS")
+        db.execSQL("DROP TABLE IF EXISTS favorites")
         onCreate(db)
+    }
+
+    fun addFavorite(id: Int, title: String) {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("id", id)
+            put("title", title)
+        }
+        db.insertWithOnConflict("favorites", null, values, SQLiteDatabase.CONFLICT_REPLACE)
+        db.close()
+    }
+
+    fun removeFavorite(id: Int) {
+        val db = writableDatabase
+        db.delete("favorites", "id=?", arrayOf(id.toString()))
+        db.close()
+    }
+
+    fun isFavorite(id: Int): Boolean {
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT id FROM favorites WHERE id=?", arrayOf(id.toString()))
+
+        val exists = cursor.count > 0
+        cursor.close()
+        return exists
+    }
+
+    fun getAllFavorites(): List<Pair<Int, String>> {
+        val list = mutableListOf<Pair<Int, String>>()
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT id, title FROM favorites", null)
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(0)
+                val title = cursor.getString(1)
+                list.add(Pair(id, title))
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        return list
     }
 
     fun getUserById(id: Int): User? {
@@ -91,7 +143,7 @@ class DBHelper(context: Context) :
         return id
     }
 
-    //If user exists in the database this function will return TRUE
+    //if user exists in the database this function will return TRUE
     fun readUser(email: String, password: String) : Boolean{
         val db = readableDatabase
         val selection = "$COL_EMAIL = ? AND $COL_PASSWORD = ?"
@@ -152,8 +204,7 @@ class DBHelper(context: Context) :
 
     companion object {
         private const val DB_NAME = "kusinakasama.db"
-        private const val DB_VERSION = 1
-
+        private const val DB_VERSION = 2
         const val TABLE_USERS = "users"
         const val COL_ID = "id"
         const val COL_NAME = "name"

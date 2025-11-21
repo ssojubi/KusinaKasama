@@ -93,14 +93,31 @@ class HomeFragment : Fragment() {
             }
 
             container.addView(itemView)
+
+            val favButton = itemView.findViewById<ImageView>(R.id.btnFavorite)
+            val db = DBHelper(requireContext())
+
+            // Set initial state
+            if (db.isFavorite(recipe.id)) {
+                favButton.setImageResource(R.drawable.ic_heart_filled)
+            } else {
+                favButton.setImageResource(R.drawable.ic_heart_hollow)
+            }
+
+            // Toggle favorite
+            favButton.setOnClickListener {
+                if (db.isFavorite(recipe.id)) {
+                    db.removeFavorite(recipe.id)
+                    favButton.setImageResource(R.drawable.ic_heart_hollow)
+                } else {
+                    db.addFavorite(recipe.id, recipe.title ?: "")
+                    favButton.setImageResource(R.drawable.ic_heart_filled)
+                }
+            }
+
         }
     }
 
-// Example: Button opens ProfileActivity
-//        binding.btnGoProfile.setOnClickListener {
-//            val intent = Intent(requireContext(), ProfileActivity::class.java)
-//            startActivity(intent)
-//        }
     private fun addChip(text: String) {
         val chip = layoutInflater.inflate(R.layout.ingredient_chip, null) as Chip
         chip.text = text

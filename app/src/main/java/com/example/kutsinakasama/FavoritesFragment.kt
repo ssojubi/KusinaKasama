@@ -1,50 +1,59 @@
 package com.example.kutsinakasama
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.kutsinakasama.databinding.FavoritesBinding
 
 class FavoritesFragment : Fragment() {
 
-    private var _binding: FavoritesBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FavoritesBinding
+    private lateinit var db: DBHelper
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FavoritesBinding.inflate(inflater, container, false)
+        binding = FavoritesBinding.inflate(inflater, container, false)
+        db = DBHelper(requireContext())
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onResume() {
+        super.onResume()
+        loadFavorites()
+    }
 
-        // Back button behavior
-//        binding.btnBack.setOnClickListener {
-//            requireActivity().onBackPressedDispatcher.onBackPressed()
-//        }
+    private fun loadFavorites() {
+        val favorites = db.getAllFavorites()
 
-        // Example recipe button toasts
-        binding.recipeBtn.setOnClickListener {
-            Toast.makeText(requireContext(), "Redirect to recipe page!", Toast.LENGTH_SHORT).show()
-        }
+        val container = binding.favoritesContainer
+        container.removeAllViews()
 
-        binding.recipeBtn2.setOnClickListener {
-            Toast.makeText(requireContext(), "Redirect to recipe page2!", Toast.LENGTH_SHORT).show()
-        }
+        for ((id, title) in favorites) {
+            val itemView = layoutInflater.inflate(R.layout.favorite_item, container, false)
 
-        binding.recipeBtn3.setOnClickListener {
-            Toast.makeText(requireContext(), "Redirect to recipe page3!", Toast.LENGTH_SHORT).show()
+            val titleView = itemView.findViewById<TextView>(R.id.tvFavTitle)
+            titleView.text = title
+
+            itemView.setOnClickListener {
+                val intent = Intent(requireContext(), RecipeActivity::class.java)
+                intent.putExtra("RECIPE_ID", id)
+                startActivity(intent)
+            }
+
+            container.addView(itemView)
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+//    override fun onDestroyView() {
+//        super.onDestroyView()
+//        _binding = null
+//    }
 }

@@ -55,7 +55,6 @@ class ProfileFragment : Fragment() {
             binding.tvEmail.text = user.email
 
             if (user.imageUri != null && user.imageUri != "null" && user.imageUri!!.isNotEmpty()) {
-
                 Picasso.get()
                     .load(File(user.imageUri))
                     .transform(CircleImage())
