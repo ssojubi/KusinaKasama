@@ -24,7 +24,7 @@ class HomeFragment : Fragment() {
     private var _binding: HomeBinding? = null
     private val binding get() = _binding!!
     private var currentRecipes: List<RecipePreview> = emptyList()
-    private val apiKey = "f3051e4d59ff4d2daebd550ced762374"
+    private val apiKey = "35472b15244d43878a94806d0a677d4a"
     private val dishTypes = listOf(
         "Mains",
         "Desserts",

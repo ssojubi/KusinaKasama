@@ -3,6 +3,7 @@ package com.example.kutsinakasama
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.text.HtmlCompat
 import com.bumptech.glide.Glide
 import com.example.kutsinakasama.databinding.RecipeBinding
 import retrofit2.Call
@@ -14,7 +15,7 @@ class RecipeActivity : AppCompatActivity() {
     private lateinit var binding: RecipeBinding
     private lateinit var db: DBHelper
 
-    private val apiKey = "f3051e4d59ff4d2daebd550ced762374"
+    private val apiKey = "35472b15244d43878a94806d0a677d4a"
     private var recipeId = -1
     private var recipeTitle = ""
 
@@ -68,24 +69,24 @@ class RecipeActivity : AppCompatActivity() {
         RetrofitClient.instance.getRecipeInformation(recipeId, apiKey)
             .enqueue(object : Callback<RecipeResponse> {
 
-                override fun onResponse(
-                    call: Call<RecipeResponse>,
-                    response: Response<RecipeResponse>
-                ) {
+                override fun onResponse(call: Call<RecipeResponse>, response: Response<RecipeResponse>) {
                     if (response.isSuccessful) {
                         val recipe = response.body()
                         if (recipe != null) {
                             recipeTitle = recipe.title ?: "No Title"
+                            binding.tvRecipeTitle.text = HtmlCompat.fromHtml(
+                                recipeTitle,
+                                HtmlCompat.FROM_HTML_MODE_LEGACY
+                            ).toString()
 
-                            binding.tvRecipeTitle.text = recipeTitle
+                            binding.tvMethod.text = HtmlCompat.fromHtml(
+                                recipe.instructions ?: "No instructions available.",
+                                HtmlCompat.FROM_HTML_MODE_LEGACY
+                            ).toString()
 
-                            binding.tvMethod.text =
-                                recipe.instructions ?: "No instructions available."
-
-                            binding.tvIngredients.text =
-                                recipe.extendedIngredients.joinToString("\n") {
-                                    "• ${it.original}"
-                                }
+                            binding.tvIngredients.text = (recipe.extendedIngredients ?: emptyList()).joinToString("\n") {
+                                "• ${HtmlCompat.fromHtml(it.original, HtmlCompat.FROM_HTML_MODE_LEGACY)}"
+                            }
 
                             Glide.with(this@RecipeActivity)
                                 .load(recipe.image)
@@ -102,10 +103,10 @@ class RecipeActivity : AppCompatActivity() {
                         Log.e("API_ERROR", "Response not successful: ${response.code()}")
                     }
                 }
-
                 override fun onFailure(call: Call<RecipeResponse>, t: Throwable) {
                     Log.e("API_ERROR", "Failed to load recipe", t)
                 }
             })
     }
+
 }
