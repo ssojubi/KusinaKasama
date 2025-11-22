@@ -16,6 +16,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import com.google.android.material.chip.Chip
 import android.view.inputmethod.EditorInfo
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 
 class HomeFragment : Fragment() {
 
@@ -23,7 +25,15 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
     private var currentRecipes: List<RecipePreview> = emptyList()
     private val apiKey = "f3051e4d59ff4d2daebd550ced762374"
-
+    private val dishTypes = listOf(
+        "Mains",
+        "Desserts",
+        "Appetizers",
+        "Salads",
+        "Breakfasts",
+        "Beverages",
+        "Snacks"
+    )
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -34,7 +44,6 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        // refresh
         if (_binding != null && currentRecipes.isNotEmpty()) {
             displayRecipes(currentRecipes)
         }
@@ -47,15 +56,17 @@ class HomeFragment : Fragment() {
 
             if (input.isNotEmpty()) {
                 addChip(input)
-                binding.searchBar.text.clear()   // clear after enter
+                binding.searchBar.text.clear()
             }
 
             true
         }
 
+        binding.filterBtn.setOnClickListener {
+            openFilterDialog()
+        }
         loadRecipes()
     }
-
     private fun loadRecipes() {
         RetrofitClient.instance.getRecipes(apiKey)
             .enqueue(object : Callback<RecipeSearchResponse> {
@@ -110,8 +121,6 @@ class HomeFragment : Fragment() {
             } else {
                 favButton.setImageResource(R.drawable.ic_heart_hollow)
             }
-
-
             favButton.setOnClickListener {
                 if (db.isFavorite(recipe.id)) {
                     db.removeFavorite(recipe.id)
@@ -128,25 +137,64 @@ class HomeFragment : Fragment() {
     private fun addChip(text: String) {
         val chip = layoutInflater.inflate(R.layout.ingredient_chip, null) as Chip
         chip.text = text
-
-        // Disable chip selection toggle
         chip.isCheckable = false
         chip.isClickable = true
 
-        // Remove chip when X is pressed
         chip.setOnCloseIconClickListener {
             binding.ingredientChipGroup.removeView(chip)
         }
-
         binding.ingredientChipGroup.addView(chip)
     }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+    private fun fetchRecipesByType(type: String) {
+        RetrofitClient.instance.getRecipesByType(apiKey, type)
+            .enqueue(object : Callback<RecipeSearchResponse> {
+                override fun onResponse(
+                    call: Call<RecipeSearchResponse>,
+                    response: Response<RecipeSearchResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val recipes = response.body()?.results ?: emptyList()
+                        currentRecipes = recipes
+                        displayRecipes(recipes)
+                    }
+                }
+
+                override fun onFailure(call: Call<RecipeSearchResponse>, t: Throwable) {
+                    Log.e("API_ERROR", "Failed to load recipes", t)
+                }
+            })
+    }
+    private fun filterRecipesByDishType(type: String) {
+        fetchRecipesByType(type)
+    }
+    private fun openFilterDialog() {
+        val dialogView = LayoutInflater.from(requireContext())
+            .inflate(R.layout.filter_dialog, null)
+
+        val spinner = dialogView.findViewById<Spinner>(R.id.dishTypeSpinner)
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            dishTypes
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Filter by Dish Type")
+            .setView(dialogView)
+            .setPositiveButton("Apply") { _, _ ->
+                val selectedType = spinner.selectedItem.toString()
+                filterRecipesByDishType(selectedType)
+            }
+            .setNegativeButton("Cancel", null)
+            .create()
+
+        dialog.show()
+    }
 
 }
-
-
-
 
