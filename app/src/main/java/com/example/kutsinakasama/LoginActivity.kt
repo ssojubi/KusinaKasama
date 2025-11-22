@@ -90,17 +90,27 @@ class LoginActivity : AppCompatActivity() {
 
             if (!savedImageUri.isNullOrEmpty()) {
                 try {
-                    val imageUri = Uri.parse(savedImageUri)
-                    val inputStream = contentResolver.openInputStream(imageUri)
-                    val bitmap = BitmapFactory.decodeStream(inputStream)
-                    binding.imageView.setImageBitmap(bitmap)
-                    inputStream?.close()
+                    if (savedImageUri.startsWith("android.resource://")) {
+                        // It's a resource URI, load it the original way
+                        val imageUri = Uri.parse(savedImageUri)
+                        val inputStream = contentResolver.openInputStream(imageUri)
+                        val bitmap = BitmapFactory.decodeStream(inputStream)
+                        binding.profileImage.setImageBitmap(bitmap)
+                        inputStream?.close()
+                    } else {
+                        val file = java.io.File(savedImageUri)
+                        if (file.exists()) {
+                            binding.profileImage.setImageURI(Uri.fromFile(file))
+                        } else {
+                            binding.profileImage.setImageResource(R.drawable.baseline_account_circle_24)
+                        }
+                    }
                 } catch (e: Exception) {
                     Log.e("LoginActivity", "Failed to load image URI: $savedImageUri", e)
-                    binding.imageView.setImageResource(R.drawable.baseline_account_circle_24)
+                    binding.profileImage.setImageResource(R.drawable.baseline_account_circle_24)
                 }
             } else {
-                binding.imageView.setImageResource(R.drawable.baseline_account_circle_24)
+                binding.profileImage.setImageResource(R.drawable.baseline_account_circle_24)
             }
         }
     }
@@ -120,6 +130,6 @@ class LoginActivity : AppCompatActivity() {
         editor.clear()
         editor.apply()
 
-        binding.imageView.setImageResource(R.drawable.baseline_account_circle_24)
+        binding.profileImage.setImageResource(R.drawable.baseline_account_circle_24)
     }
 }

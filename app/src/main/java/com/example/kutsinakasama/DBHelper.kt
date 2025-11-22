@@ -130,13 +130,17 @@ class DBHelper(context: Context) :
         return userId
     }
 
+
     fun insertUser(name: String, email: String, password: String): Long {
         val db = writableDatabase
+
+        val defaultImageUri = "android.resource://com.example.kutsinakasama/${R.drawable.baseline_account_circle_24}"
+
         val values = ContentValues().apply {
-            // Reference the lowercase 'user' parameter
             put(COL_NAME, name)
             put(COL_EMAIL, email)
             put(COL_PASSWORD, password)
+            put(COL_IMAGE_URI, defaultImageUri)
         }
 
         val id = db.insert(TABLE_USERS, null, values)
