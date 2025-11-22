@@ -54,14 +54,29 @@ class ProfileFragment : Fragment() {
             binding.tvName.text = user.name
             binding.tvEmail.text = user.email
 
-            if (user.imageUri != null && user.imageUri != "null" && user.imageUri!!.isNotEmpty()) {
+            // load profile image
+            if (!user.imageUri.isNullOrEmpty() && user.imageUri != "null") {
+                try {
+                    Picasso.get()
+                        .load(File(user.imageUri))
+                        .transform(CircleImage())
+                        .placeholder(R.drawable.ic_user_icon_placeholder)
+                        .error(R.drawable.ic_user_icon_placeholder)
+                        .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                        .networkPolicy(NetworkPolicy.NO_CACHE)
+                        .into(binding.imgProfile)
+                } catch (e: Exception) {
+                    Log.e("ProfileFragment", "Error loading image: ${e.message}")
+                    Picasso.get()
+                        .load(R.drawable.ic_user_icon_placeholder)
+                        .transform(CircleImage())
+                        .into(binding.imgProfile)
+                }
+            } else {
                 Picasso.get()
-                    .load(File(user.imageUri))
+                    .load(R.drawable.ic_user_icon_placeholder)
                     .transform(CircleImage())
-                    .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
-                    .networkPolicy(NetworkPolicy.NO_CACHE)
                     .into(binding.imgProfile)
-
             }
         }
     }

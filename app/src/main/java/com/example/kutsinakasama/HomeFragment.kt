@@ -24,7 +24,7 @@ class HomeFragment : Fragment() {
     private var _binding: HomeBinding? = null
     private val binding get() = _binding!!
     private var currentRecipes: List<RecipePreview> = emptyList()
-    private val apiKey = "72a7a379394e498286930b1e99abeb97"
+    private val apiKey = "c1ec907a9bc0427798843f1468393ba9"
     private val dishTypes = listOf(
         "Mains",
         "Desserts",
@@ -35,7 +35,7 @@ class HomeFragment : Fragment() {
         "Snacks"
     )
 
-    // current filters
+    // Track current filters
     private var currentDishType: String? = null
     private val searchIngredients = mutableListOf<String>()
 
@@ -57,6 +57,16 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Restore saved state if exists
+        savedInstanceState?.let {
+            val savedIngredients = it.getStringArrayList(KEY_INGREDIENTS)
+            savedIngredients?.forEach { ingredient ->
+                searchIngredients.add(ingredient)
+                addChip(ingredient)
+            }
+            currentDishType = it.getString(KEY_DISH_TYPE)
+        }
+
         binding.searchBar.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 val input = binding.searchBar.text.toString().trim()
@@ -66,7 +76,7 @@ class HomeFragment : Fragment() {
                     searchIngredients.add(input)
                     binding.searchBar.text.clear()
 
-                    // trigger search with ingredients (in chips)
+                    // Trigger search with updated ingredients
                     performSearch()
                 }
                 true
@@ -79,7 +89,24 @@ class HomeFragment : Fragment() {
             openFilterDialog()
         }
 
-        loadRecipes()
+        // Only load recipes if we don't have saved state
+        if (savedInstanceState == null) {
+            loadRecipes()
+        } else {
+            // Restore previous search results
+            if (searchIngredients.isNotEmpty() || currentDishType != null) {
+                performSearch()
+            } else {
+                loadRecipes()
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // Save current search state
+        outState.putStringArrayList(KEY_INGREDIENTS, ArrayList(searchIngredients))
+        outState.putString(KEY_DISH_TYPE, currentDishType)
     }
 
     private fun loadRecipes() {
@@ -114,32 +141,18 @@ class HomeFragment : Fragment() {
                 }
             })
     }
-    private fun showLoading() {
-        binding.progressCircular.visibility = View.VISIBLE
-        binding.recipeContainer.visibility = View.GONE
-    }
-    private fun hideLoading() {
-        binding.progressCircular.visibility = View.GONE
-        binding.recipeContainer.visibility = View.VISIBLE
-    }
-    private fun performSearch() {
-        // loading state
-        binding.recipeContainer.removeAllViews()
-        val loadingView = TextView(requireContext()).apply {
-            text = "Loading recipes..."
-            textSize = 16f
-            setPadding(16, 32, 16, 16)
-        }
-        binding.recipeContainer.addView(loadingView)
 
-        // combine ingredients with comma for API
+    private fun performSearch() {
+        showLoading()
+
+        // Combine ingredients into a comma-separated string for the API
         val ingredientsQuery = if (searchIngredients.isNotEmpty()) {
             searchIngredients.joinToString(",")
         } else {
             null
         }
 
-        // call API with ingredients and filter chosen
+        // Call API with both ingredients and dish type filter
         RetrofitClient.instance.searchRecipes(
             apiKey = apiKey,
             query = ingredientsQuery,
@@ -149,8 +162,10 @@ class HomeFragment : Fragment() {
                 call: Call<RecipeSearchResponse>,
                 response: Response<RecipeSearchResponse>
             ) {
-                // makes sure nasa activity pa rin
+                // Ensure we're still attached to activity
                 if (!isAdded) return
+
+                hideLoading()
 
                 if (response.isSuccessful) {
                     val recipes = response.body()?.results ?: emptyList()
@@ -163,13 +178,24 @@ class HomeFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<RecipeSearchResponse>, t: Throwable) {
-                // makes sure nasa activity pa rin
+                // Ensure we're still attached to activity
                 if (!isAdded) return
 
+                hideLoading()
                 Log.e("API_ERROR", "Search request failed", t)
                 showError("Network error. Please check your connection.")
             }
         })
+    }
+
+    private fun showLoading() {
+        binding.progressCircular.visibility = View.VISIBLE
+        binding.recipeContainer.visibility = View.GONE
+    }
+
+    private fun hideLoading() {
+        binding.progressCircular.visibility = View.GONE
+        binding.recipeContainer.visibility = View.VISIBLE
     }
 
     private fun showError(message: String) {
@@ -183,12 +209,14 @@ class HomeFragment : Fragment() {
     }
 
     private fun displayRecipes(recipes: List<RecipePreview>) {
+        // Ensure we're still attached
         if (!isAdded) return
 
         val container = binding.recipeContainer
         container.removeAllViews()
 
         if (recipes.isEmpty()) {
+            // Show "no results" message
             val noResultsView = TextView(requireContext()).apply {
                 text = "No recipes found"
                 textSize = 16f
@@ -198,7 +226,7 @@ class HomeFragment : Fragment() {
             return
         }
 
-        // initialize DB once outside loop
+        // Initialize DB once outside loop
         val db = DBHelper(requireContext())
 
         for (recipe in recipes) {
@@ -208,7 +236,7 @@ class HomeFragment : Fragment() {
 
             titleView.text = recipe.title ?: "No Title"
 
-            // error handling
+            // Load images with placeholder and error handling
             Glide.with(this@HomeFragment)
                 .load(recipe.image)
                 .placeholder(android.R.drawable.ic_menu_gallery)
@@ -223,7 +251,7 @@ class HomeFragment : Fragment() {
 
             val favButton = itemView.findViewById<ImageView>(R.id.btnFavorite)
 
-            // check favorite status once
+            // Check favorite status once
             val isFavorite = db.isFavorite(recipe.id)
             favButton.setImageResource(
                 if (isFavorite) R.drawable.ic_heart_filled
@@ -252,7 +280,7 @@ class HomeFragment : Fragment() {
 
         chip.setOnCloseIconClickListener {
             binding.ingredientChipGroup.removeView(chip)
-            // removes from search list and searchs again
+            // Remove from search list and re-search
             searchIngredients.remove(text)
             performSearch()
         }
@@ -265,10 +293,10 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-//    private fun filterRecipesByDishType(type: String) {
-//        currentDishType = type
-//        performSearch()
-//    }
+    private fun filterRecipesByDishType(type: String) {
+        currentDishType = type
+        performSearch()
+    }
 
     private fun openFilterDialog() {
         val dialogView = LayoutInflater.from(requireContext())
@@ -283,9 +311,9 @@ class HomeFragment : Fragment() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
 
-        // set current selection if filter is active
+        // Set current selection if filter is active
         currentDishType?.let { type ->
-            val position = dishTypes.indexOf(type) + 1 // +1 for "All"
+            val position = dishTypes.indexOf(type) + 1 // +1 for "All" option
             if (position > 0) spinner.setSelection(position)
         }
 
@@ -305,5 +333,10 @@ class HomeFragment : Fragment() {
             .create()
 
         dialog.show()
+    }
+
+    companion object {
+        private const val KEY_INGREDIENTS = "search_ingredients"
+        private const val KEY_DISH_TYPE = "dish_type"
     }
 }

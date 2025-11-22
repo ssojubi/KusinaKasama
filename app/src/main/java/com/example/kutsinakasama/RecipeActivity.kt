@@ -15,7 +15,7 @@ class RecipeActivity : AppCompatActivity() {
     private lateinit var binding: RecipeBinding
     private lateinit var db: DBHelper
 
-    private val apiKey = "72a7a379394e498286930b1e99abeb97"
+    private val apiKey = "c1ec907a9bc0427798843f1468393ba9"
     private var recipeId = -1
     private var recipeTitle = ""
 
