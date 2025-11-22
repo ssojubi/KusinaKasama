@@ -26,5 +26,19 @@ interface SpoonacularApi {
         @Query("type") type: String
     ): Call<RecipeSearchResponse>
 
+//    @GET("recipes/search")
+//    fun searchRecipes(
+//        @Query("apiKey") apiKey: String,
+//        @Query("query") query: String?,     // search
+//        @Query("type") type: String?        // filter
+//    ): Call<RecipeSearchResponse>
+    @GET("recipes/complexSearch")
+    fun searchRecipes(
+        @Query("apiKey") apiKey: String,
+        @Query("includeIngredients") query: String?,  // Comma-separated ingredients
+        @Query("type") type: String?,                  // Dish type filter
+        @Query("number") number: Int = 10,
+        @Query("addRecipeInformation") addRecipeInformation: Boolean = true
+    ): Call<RecipeSearchResponse>
 }
 
