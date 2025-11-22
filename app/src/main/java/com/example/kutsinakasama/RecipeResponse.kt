@@ -19,5 +19,6 @@ data class RecipeSearchResponse(
 data class RecipePreview(
     val id: Int,
     val title: String,
-    val image: String
+    val image: String,
+    val dishTypes: List<String>?
 )
