@@ -1,12 +1,12 @@
 package com.example.kutsinakasama
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.kutsinakasama.databinding.FavoritesBinding
 
@@ -31,25 +31,37 @@ class FavoritesFragment : Fragment() {
     }
 
     private fun loadFavorites() {
-        val favorites = db.getAllFavorites()
+        val prefs = requireActivity().getSharedPreferences("userSession", Context.MODE_PRIVATE)
+        val userId = prefs.getInt("userId", -1)
 
         val container = binding.favoritesContainer
         container.removeAllViews()
 
-        for ((id, title) in favorites) {
-            val itemView = layoutInflater.inflate(R.layout.favorite_item, container, false)
+        val cursor = db.readableDatabase.rawQuery(
+            "SELECT id, title FROM favorites WHERE user_id=?",
+            arrayOf(userId.toString())
+        )
 
-            val titleView = itemView.findViewById<TextView>(R.id.tvFavTitle)
-            titleView.text = title
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(0)
+                val title = cursor.getString(1)
 
-            itemView.setOnClickListener {
-                val intent = Intent(requireContext(), RecipeActivity::class.java)
-                intent.putExtra("RECIPE_ID", id)
-                startActivity(intent)
-            }
+                val itemView =
+                    layoutInflater.inflate(R.layout.favorite_item, container, false)
+                itemView.findViewById<TextView>(R.id.tvFavTitle).text = title
 
-            container.addView(itemView)
+                itemView.setOnClickListener {
+                    val intent = Intent(requireContext(), RecipeActivity::class.java)
+                    intent.putExtra("RECIPE_ID", id)
+                    startActivity(intent)
+                }
+
+                container.addView(itemView)
+            } while (cursor.moveToNext())
         }
+
+        cursor.close()
     }
 
 //    override fun onDestroyView() {

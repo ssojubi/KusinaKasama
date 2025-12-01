@@ -18,13 +18,14 @@ import com.google.android.material.chip.Chip
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import android.content.Context
 
 class HomeFragment : Fragment() {
 
     private var _binding: HomeBinding? = null
     private val binding get() = _binding!!
     private var currentRecipes: List<RecipePreview> = emptyList()
-    private val apiKey = "c1ec907a9bc0427798843f1468393ba9"
+    private val apiKey = "7f5f9edf502b4b22ab5721822ac8a78d"
     private val dishTypes = listOf(
         "Mains",
         "Desserts",
@@ -57,7 +58,6 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Restore saved state if exists
         savedInstanceState?.let {
             val savedIngredients = it.getStringArrayList(KEY_INGREDIENTS)
             savedIngredients?.forEach { ingredient ->
@@ -70,30 +70,21 @@ class HomeFragment : Fragment() {
         binding.searchBar.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 val input = binding.searchBar.text.toString().trim()
-
                 if (input.isNotEmpty()) {
                     addChip(input)
                     searchIngredients.add(input)
                     binding.searchBar.text.clear()
-
-                    // Trigger search with updated ingredients
                     performSearch()
                 }
                 true
-            } else {
-                false
-            }
+            } else false
         }
 
-        binding.filterBtn.setOnClickListener {
-            openFilterDialog()
-        }
+        binding.filterBtn.setOnClickListener { openFilterDialog() }
 
-        // Only load recipes if we don't have saved state
         if (savedInstanceState == null) {
             loadRecipes()
         } else {
-            // Restore previous search results
             if (searchIngredients.isNotEmpty() || currentDishType != null) {
                 performSearch()
             } else {
@@ -104,7 +95,6 @@ class HomeFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        // Save current search state
         outState.putStringArrayList(KEY_INGREDIENTS, ArrayList(searchIngredients))
         outState.putString(KEY_DISH_TYPE, currentDishType)
     }
@@ -119,25 +109,19 @@ class HomeFragment : Fragment() {
                     response: Response<RecipeSearchResponse>
                 ) {
                     if (!isAdded) return
-
                     hideLoading()
 
                     if (response.isSuccessful) {
                         val recipes = response.body()?.results ?: emptyList()
                         currentRecipes = recipes
                         displayRecipes(recipes)
-                    } else {
-                        Log.e("API_ERROR", "Response not successful: ${response.code()}")
-                        showError("Failed to load recipes")
-                    }
+                    } else showError("Failed to load recipes")
                 }
 
                 override fun onFailure(call: Call<RecipeSearchResponse>, t: Throwable) {
                     if (!isAdded) return
-
                     hideLoading()
-                    Log.e("API_ERROR", "Failed to load recipes", t)
-                    showError("Network error. Please check your connection.")
+                    showError("Network error.")
                 }
             })
     }
@@ -145,14 +129,9 @@ class HomeFragment : Fragment() {
     private fun performSearch() {
         showLoading()
 
-        // Combine ingredients into a comma-separated string for the API
-        val ingredientsQuery = if (searchIngredients.isNotEmpty()) {
-            searchIngredients.joinToString(",")
-        } else {
-            null
-        }
+        val ingredientsQuery =
+            if (searchIngredients.isNotEmpty()) searchIngredients.joinToString(",") else null
 
-        // Call API with both ingredients and dish type filter
         RetrofitClient.instance.searchRecipes(
             apiKey = apiKey,
             query = ingredientsQuery,
@@ -162,28 +141,20 @@ class HomeFragment : Fragment() {
                 call: Call<RecipeSearchResponse>,
                 response: Response<RecipeSearchResponse>
             ) {
-                // Ensure we're still attached to activity
                 if (!isAdded) return
-
                 hideLoading()
 
                 if (response.isSuccessful) {
                     val recipes = response.body()?.results ?: emptyList()
                     currentRecipes = recipes
                     displayRecipes(recipes)
-                } else {
-                    Log.e("API_ERROR", "Search failed: ${response.code()}")
-                    showError("Failed to load recipes")
-                }
+                } else showError("Failed to load recipes")
             }
 
             override fun onFailure(call: Call<RecipeSearchResponse>, t: Throwable) {
-                // Ensure we're still attached to activity
                 if (!isAdded) return
-
                 hideLoading()
-                Log.e("API_ERROR", "Search request failed", t)
-                showError("Network error. Please check your connection.")
+                showError("Network error.")
             }
         })
     }
@@ -209,39 +180,24 @@ class HomeFragment : Fragment() {
     }
 
     private fun displayRecipes(recipes: List<RecipePreview>) {
-        // Ensure we're still attached
         if (!isAdded) return
 
         val container = binding.recipeContainer
         container.removeAllViews()
 
-        if (recipes.isEmpty()) {
-            // Show "no results" message
-            val noResultsView = TextView(requireContext()).apply {
-                text = "No recipes found"
-                textSize = 16f
-                setPadding(16, 32, 16, 16)
-            }
-            container.addView(noResultsView)
-            return
-        }
-
-        // Initialize DB once outside loop
         val db = DBHelper(requireContext())
+        val prefs = requireActivity().getSharedPreferences("userSession", Context.MODE_PRIVATE)
+        val userId = prefs.getInt("userId", -1)
 
         for (recipe in recipes) {
+
             val itemView = layoutInflater.inflate(R.layout.home_recipe_card, container, false)
             val titleView = itemView.findViewById<TextView>(R.id.tvRecipeTitle)
             val imageView = itemView.findViewById<ImageView>(R.id.imgRecipe)
+            val favButton = itemView.findViewById<ImageView>(R.id.btnFavorite)
 
-            titleView.text = recipe.title ?: "No Title"
-
-            // Load images with placeholder and error handling
-            Glide.with(this@HomeFragment)
-                .load(recipe.image)
-                .placeholder(android.R.drawable.ic_menu_gallery)
-                .error(android.R.drawable.ic_menu_report_image)
-                .into(imageView)
+            titleView.text = recipe.title
+            Glide.with(this).load(recipe.image).into(imageView)
 
             itemView.setOnClickListener {
                 val intent = Intent(requireContext(), RecipeActivity::class.java)
@@ -249,24 +205,50 @@ class HomeFragment : Fragment() {
                 startActivity(intent)
             }
 
-            val favButton = itemView.findViewById<ImageView>(R.id.btnFavorite)
-
-            // Check favorite status once
-            val isFavorite = db.isFavorite(recipe.id)
-            favButton.setImageResource(
-                if (isFavorite) R.drawable.ic_heart_filled
-                else R.drawable.ic_heart_hollow
-            )
-
             favButton.setOnClickListener {
-                if (db.isFavorite(recipe.id)) {
-                    db.removeFavorite(recipe.id)
-                    favButton.setImageResource(R.drawable.ic_heart_hollow)
-                } else {
-                    db.addFavorite(recipe.id, recipe.title ?: "")
-                    favButton.setImageResource(R.drawable.ic_heart_filled)
-                }
+
+                RetrofitClient.instance.getRecipeInformation(recipe.id, apiKey)
+                    .enqueue(object : Callback<RecipeResponse> {
+
+                        override fun onResponse(
+                            call: Call<RecipeResponse>,
+                            response: Response<RecipeResponse>
+                        ) {
+                            if (!response.isSuccessful || response.body() == null) return
+
+                            val full = response.body()!!
+                            val ingredientsString = full.extendedIngredients.joinToString("\n") { it.original }
+
+                            val localImage = db.saveImageLocally(requireContext(), full.image, full.id)
+
+                            if (db.isFavorite(full.id, userId)) {
+                                db.removeFavorite(full.id, userId)
+                                favButton.setImageResource(R.drawable.ic_heart_hollow)
+                            } else {
+                                db.addFavorite(
+                                    full.id,
+                                    userId,
+                                    full.title,
+                                    localImage,
+                                    full.instructions ?: "",
+                                    ingredientsString
+                                )
+                                favButton.setImageResource(R.drawable.ic_heart_filled)
+                            }
+                        }
+
+                        override fun onFailure(call: Call<RecipeResponse>, t: Throwable) {
+                            Log.e("HOME_FAV", "Failed to fetch full recipe", t)
+                        }
+                    })
             }
+
+            favButton.setImageResource(
+                if (db.isFavorite(recipe.id, userId))
+                    R.drawable.ic_heart_filled
+                else
+                    R.drawable.ic_heart_hollow
+            )
 
             container.addView(itemView)
         }
@@ -280,7 +262,6 @@ class HomeFragment : Fragment() {
 
         chip.setOnCloseIconClickListener {
             binding.ingredientChipGroup.removeView(chip)
-            // Remove from search list and re-search
             searchIngredients.remove(text)
             performSearch()
         }
@@ -299,21 +280,21 @@ class HomeFragment : Fragment() {
     }
 
     private fun openFilterDialog() {
-        val dialogView = LayoutInflater.from(requireContext())
-            .inflate(R.layout.filter_dialog, null)
+        val dialogView =
+            LayoutInflater.from(requireContext()).inflate(R.layout.filter_dialog, null)
 
         val spinner = dialogView.findViewById<Spinner>(R.id.dishTypeSpinner)
         val adapter = ArrayAdapter(
             requireContext(),
             android.R.layout.simple_spinner_item,
-            listOf("All") + dishTypes  // Add "All" option to clear filter
+            listOf("All") + dishTypes
         )
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
 
-        // Set current selection if filter is active
         currentDishType?.let { type ->
-            val position = dishTypes.indexOf(type) + 1 // +1 for "All" option
+            val position = dishTypes.indexOf(type) + 1
             if (position > 0) spinner.setSelection(position)
         }
 
@@ -322,11 +303,7 @@ class HomeFragment : Fragment() {
             .setView(dialogView)
             .setPositiveButton("Apply") { _, _ ->
                 val selected = spinner.selectedItem.toString()
-                if (selected == "All") {
-                    currentDishType = null
-                } else {
-                    currentDishType = selected
-                }
+                currentDishType = if (selected == "All") null else selected
                 performSearch()
             }
             .setNegativeButton("Cancel", null)
