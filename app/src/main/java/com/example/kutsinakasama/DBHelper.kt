@@ -214,7 +214,7 @@ class DBHelper(context: Context) :
             input.close()
             output.close()
 
-            file.absolutePath  
+            file.absolutePath
         } catch (e: Exception) {
             e.printStackTrace()
             null

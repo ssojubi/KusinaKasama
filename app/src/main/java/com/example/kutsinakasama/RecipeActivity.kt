@@ -110,7 +110,7 @@ class RecipeActivity : AppCompatActivity() {
                 recipe.id,
                 userId,
                 recipe.title,
-                localImage,
+                null,
                 instructionsString,
                 ingredientsString
             )
@@ -178,17 +178,9 @@ class RecipeActivity : AppCompatActivity() {
         binding.tvMethod.text = r.instructions
         binding.tvIngredients.text = r.ingredients
 
-        val imgFile = File(r.image ?: "")
-
-        if (imgFile.exists()) {
-            Glide.with(this)
-                .load(imgFile)
-                .into(binding.imgRecipe)
-        } else {
-            Glide.with(this)
-                .load(R.drawable.egg_sample)
-                .into(binding.imgRecipe)
-        }
+        Glide.with(this)
+            .load(R.drawable.offline_recipeimg)
+            .into(binding.imgRecipe)
 
         binding.btnFavorite.setImageResource(R.drawable.ic_heart_filled)
     }
