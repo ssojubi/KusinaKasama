@@ -19,6 +19,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.content.Context
+import androidx.core.text.HtmlCompat
 
 class HomeFragment : Fragment() {
 
@@ -217,9 +218,20 @@ class HomeFragment : Fragment() {
                             if (!response.isSuccessful || response.body() == null) return
 
                             val full = response.body()!!
-                            val ingredientsString = full.extendedIngredients.joinToString("\n") { it.original }
 
-                            val localImage = db.saveImageLocally(requireContext(), full.image, full.id)
+                            val cleanedIngredients = full.extendedIngredients.joinToString("\n") {
+                                HtmlCompat.fromHtml(it.original, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
+                            }
+
+                            val cleanedInstructions = HtmlCompat.fromHtml(
+                                full.instructions ?: "",
+                                HtmlCompat.FROM_HTML_MODE_LEGACY
+                            ).toString()
+
+                            val localImage = db.saveImageLocally(
+                                requireContext(),
+                                full.image,
+                                full.id)
 
                             if (db.isFavorite(full.id, userId)) {
                                 db.removeFavorite(full.id, userId)
@@ -230,8 +242,8 @@ class HomeFragment : Fragment() {
                                     userId,
                                     full.title,
                                     localImage,
-                                    full.instructions ?: "",
-                                    ingredientsString
+                                    cleanedInstructions,
+                                    cleanedIngredients
                                 )
                                 favButton.setImageResource(R.drawable.ic_heart_filled)
                             }
