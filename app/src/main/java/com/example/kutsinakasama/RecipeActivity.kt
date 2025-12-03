@@ -3,6 +3,7 @@ package com.example.kutsinakasama
 import android.os.Bundle
 import android.content.Context
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
@@ -42,9 +43,13 @@ class RecipeActivity : AppCompatActivity() {
     }
 
     private fun loadRecipe() {
+        showLoading()
+
         RetrofitClient.instance.getRecipeInformation(recipeId, apiKey)
             .enqueue(object : Callback<RecipeResponse> {
                 override fun onResponse(call: Call<RecipeResponse>, r: Response<RecipeResponse>) {
+                    hideLoading()
+
                     if (r.isSuccessful && r.body() != null) {
                         val recipe = r.body()!!
                         lastRecipe = recipe
@@ -67,13 +72,27 @@ class RecipeActivity : AppCompatActivity() {
                             .load(recipe.image)
                             .into(binding.imgRecipe)
 
-                    } else loadOfflineRecipe()
+                        updateFavoriteButton()
+                    } else {
+                        loadOfflineRecipe()
+                    }
                 }
 
                 override fun onFailure(call: Call<RecipeResponse>, t: Throwable) {
+                    hideLoading()
                     loadOfflineRecipe()
                 }
             })
+    }
+
+    private fun showLoading() {
+        binding.progressCircular.visibility = View.VISIBLE
+        binding.scrollView.visibility = View.GONE
+    }
+
+    private fun hideLoading() {
+        binding.progressCircular.visibility = View.GONE
+        binding.scrollView.visibility = View.VISIBLE
     }
 
     private fun updateFavoriteButton() {
@@ -104,64 +123,26 @@ class RecipeActivity : AppCompatActivity() {
             db.removeFavorite(recipeId, userId)
             binding.btnFavorite.setImageResource(R.drawable.ic_heart_hollow)
         } else {
-            val localImage = db.saveImageLocally(this, recipe.image, recipe.id)
-
-            db.addFavorite(
-                recipe.id,
-                userId,
-                recipe.title,
-                null,
-                instructionsString,
-                ingredientsString
-            )
-
             binding.btnFavorite.setImageResource(R.drawable.ic_heart_filled)
+
+            // Download and save image in background thread
+            Thread {
+                val localImagePath = db.saveImageLocally(this, recipe.image, recipe.id)
+
+                runOnUiThread {
+                    db.addFavorite(
+                        recipe.id,
+                        userId,
+                        recipe.title,
+                        localImagePath,
+                        instructionsString,
+                        ingredientsString
+                    )
+
+                    Log.d("RecipeActivity", "Image saved to: $localImagePath")
+                }
+            }.start()
         }
-    }
-
-    private fun loadRecipeFromApi() {
-        RetrofitClient.instance.getRecipeInformation(recipeId, apiKey)
-            .enqueue(object : Callback<RecipeResponse> {
-
-                override fun onResponse(
-                    call: Call<RecipeResponse>,
-                    response: Response<RecipeResponse>
-                ) {
-                    if (response.isSuccessful) {
-                        val recipe = response.body()
-                        if (recipe != null) {
-                            lastRecipe = recipe
-
-                            val cleanedInstructions = HtmlCompat.fromHtml(
-                                recipe.instructions ?: "",
-                                HtmlCompat.FROM_HTML_MODE_LEGACY
-                            ).toString()
-
-                            val cleanedIngredients = recipe.extendedIngredients.joinToString("\n") {
-                                "• " + HtmlCompat.fromHtml(it.original, HtmlCompat.FROM_HTML_MODE_LEGACY)
-                                    .toString()
-                            }
-
-                            binding.tvRecipeTitle.text = recipe.title
-                            binding.tvMethod.text = cleanedInstructions
-                            binding.tvIngredients.text = cleanedIngredients
-
-                            Glide.with(this@RecipeActivity)
-                                .load(recipe.image)
-                                .placeholder(R.drawable.egg_sample)
-                                .into(binding.imgRecipe)
-
-                            updateFavoriteButton()
-                        }
-                    } else {
-                        loadOfflineRecipe()
-                    }
-                }
-
-                override fun onFailure(call: Call<RecipeResponse>, t: Throwable) {
-                    loadOfflineRecipe()
-                }
-            })
     }
 
     private fun loadOfflineRecipe() {
@@ -178,11 +159,25 @@ class RecipeActivity : AppCompatActivity() {
         binding.tvMethod.text = r.instructions
         binding.tvIngredients.text = r.ingredients
 
-        Glide.with(this)
-            .load(R.drawable.offline_recipeimg)
-            .into(binding.imgRecipe)
+        // Load the locally saved image
+        if (!r.image.isNullOrEmpty()) {
+            val imageFile = File(r.image)
+            if (imageFile.exists()) {
+                Glide.with(this)
+                    .load(imageFile)
+                    .placeholder(R.drawable.egg_sample)
+                    .into(binding.imgRecipe)
+            } else {
+                Glide.with(this)
+                    .load(R.drawable.offline_recipeimg)
+                    .into(binding.imgRecipe)
+            }
+        } else {
+            Glide.with(this)
+                .load(R.drawable.offline_recipeimg)
+                .into(binding.imgRecipe)
+        }
 
         binding.btnFavorite.setImageResource(R.drawable.ic_heart_filled)
     }
-
 }

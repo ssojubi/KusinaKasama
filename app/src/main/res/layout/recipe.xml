@@ -1,106 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
+    <ProgressBar
+        android:id="@+id/progressCircular"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:indeterminateTint="#576238"/>
 
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="16dp">
 
-            <ImageView
-                android:id="@+id/imgRecipe"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="220dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/egg_sample"
-                android:background="@drawable/rounded_corner" />
+                android:layout_height="wrap_content">
 
+                <ImageView
+                    android:id="@+id/imgRecipe"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/egg_sample"
+                    android:background="@drawable/rounded_corner" />
 
-            <ImageView
-                android:id="@+id/btnBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="#FBF0F0"
-                android:clickable="true"
-                android:contentDescription="Back button"
-                android:elevation="3dp"
-                android:focusable="true"
-                android:src="@drawable/ic_back_btn"
-                app:tint="#000000" />
+                <ImageView
+                    android:id="@+id/btnBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="#FBF0F0"
+                    android:clickable="true"
+                    android:contentDescription="Back button"
+                    android:elevation="3dp"
+                    android:focusable="true"
+                    android:src="@drawable/ic_back_btn"
+                    app:tint="#000000" />
+
+                <TextView
+                    android:id="@+id/tvRecipeTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/imgRecipe"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="The Perfect Egg"
+                    android:textColor="@android:color/white"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:shadowColor="#80000000"
+                    android:shadowRadius="6" />
+
+                <ImageButton
+                    android:id="@+id/btnFavorite"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_alignBottom="@id/imgRecipe"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="17dp"
+                    android:layout_marginBottom="-4dp"
+                    android:background="@drawable/heart_bg_yellow"
+                    android:contentDescription="Favorite"
+                    android:padding="10dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/selector_heart" />
+
+            </RelativeLayout>
 
             <TextView
-                android:id="@+id/tvRecipeTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@id/imgRecipe"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="16dp"
-                android:text="The Perfect Egg"
-                android:textColor="@android:color/white"
-                android:textSize="22sp"
+                android:text="Ingredients"
+                android:textSize="18sp"
                 android:textStyle="bold"
-                android:shadowColor="#80000000"
-                android:shadowRadius="6" />
+                android:layout_marginTop="24dp"
+                android:textColor="@android:color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-            <ImageButton
-                android:id="@+id/btnFavorite"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_alignBottom="@id/imgRecipe"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="17dp"
-                android:layout_marginBottom="-4dp"
-                android:background="@drawable/heart_bg_yellow"
-                android:contentDescription="Favorite"
-                android:padding="10dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/selector_heart" />
+            <TextView
+                android:id="@+id/tvIngredients"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textSize="14sp"
+                android:textColor="@android:color/black" />
 
-        </RelativeLayout>
+            <TextView
+                android:text="Method"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginTop="24dp"
+                android:textColor="@android:color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-        <TextView
-            android:text="Ingredients"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginTop="24dp"
-            android:textColor="@android:color/black"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/tvMethod"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textSize="14sp"
+                android:textColor="@android:color/black"
+                android:lineSpacingExtra="4dp" />
 
-        <TextView
-            android:id="@+id/tvIngredients"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textSize="14sp"
-            android:textColor="@android:color/black" />
+        </LinearLayout>
+    </ScrollView>
 
-        <TextView
-            android:text="Method"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginTop="24dp"
-            android:textColor="@android:color/black"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/tvMethod"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textSize="14sp"
-            android:textColor="@android:color/black"
-            android:lineSpacingExtra="4dp" />
-
-    </LinearLayout>
-</ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
