@@ -14,6 +14,7 @@ import com.example.kutsinakasama.databinding.HomeBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import com.google.android.material.chip.Chip
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.Spinner
@@ -25,7 +26,7 @@ class HomeFragment : Fragment() {
     private var _binding: HomeBinding? = null
     private val binding get() = _binding!!
     private var currentRecipes: List<RecipePreview> = emptyList()
-    private val apiKey = "4b57797b271a4bc8811a5711d3425d9a"
+    private val apiKey = "115ea84463df462b96711e5e27358356"
     private val dishTypes = listOf(
         "Mains",
         "Desserts",
@@ -38,7 +39,7 @@ class HomeFragment : Fragment() {
 
     // Track current filters
     private var currentDishType: String? = null
-    private var searchQuery: String? = null
+    private val searchIngredients = mutableListOf<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,16 +60,23 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         savedInstanceState?.let {
-            searchQuery = it.getString(KEY_SEARCH_QUERY)
+            val savedIngredients = it.getStringArrayList(KEY_INGREDIENTS)
+            savedIngredients?.forEach { ingredient ->
+                searchIngredients.add(ingredient)
+                addChip(ingredient)
+            }
             currentDishType = it.getString(KEY_DISH_TYPE)
-            searchQuery?.let { query -> binding.searchBar.setText(query) }
         }
 
         binding.searchBar.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 val input = binding.searchBar.text.toString().trim()
-                searchQuery = if (input.isNotEmpty()) input else null
-                performSearch()
+                if (input.isNotEmpty()) {
+                    addChip(input)
+                    searchIngredients.add(input)
+                    binding.searchBar.text.clear()
+                    performSearch()
+                }
                 true
             } else false
         }
@@ -78,7 +86,7 @@ class HomeFragment : Fragment() {
         if (savedInstanceState == null) {
             loadRecipes()
         } else {
-            if (searchQuery != null || currentDishType != null) {
+            if (searchIngredients.isNotEmpty() || currentDishType != null) {
                 performSearch()
             } else {
                 loadRecipes()
@@ -88,7 +96,7 @@ class HomeFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(KEY_SEARCH_QUERY, searchQuery)
+        outState.putStringArrayList(KEY_INGREDIENTS, ArrayList(searchIngredients))
         outState.putString(KEY_DISH_TYPE, currentDishType)
     }
 
@@ -122,9 +130,12 @@ class HomeFragment : Fragment() {
     private fun performSearch() {
         showLoading()
 
+        val ingredientsQuery =
+            if (searchIngredients.isNotEmpty()) searchIngredients.joinToString(",") else null
+
         RetrofitClient.instance.searchRecipes(
             apiKey = apiKey,
-            query = searchQuery,
+            query = ingredientsQuery,
             type = currentDishType
         ).enqueue(object : Callback<RecipeSearchResponse> {
             override fun onResponse(
@@ -255,9 +266,29 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun addChip(text: String) {
+        val chip = layoutInflater.inflate(R.layout.ingredient_chip, null) as Chip
+        chip.text = text
+        chip.isCheckable = false
+        chip.isClickable = true
+
+        chip.setOnCloseIconClickListener {
+            binding.ingredientChipGroup.removeView(chip)
+            searchIngredients.remove(text)
+            performSearch()
+        }
+
+        binding.ingredientChipGroup.addView(chip)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun filterRecipesByDishType(type: String) {
+        currentDishType = type
+        performSearch()
     }
 
     private fun openFilterDialog() {
@@ -294,7 +325,7 @@ class HomeFragment : Fragment() {
     }
 
     companion object {
-        private const val KEY_SEARCH_QUERY = "search_query"
+        private const val KEY_INGREDIENTS = "search_ingredients"
         private const val KEY_DISH_TYPE = "dish_type"
     }
 }
